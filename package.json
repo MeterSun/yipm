@@ -1,0 +1,24 @@
+{
+  "name": "yipm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "ya": "index.js",
+    "yad": "index.js",
+    "yag": "index.js",
+    "yb": "index.js",
+    "yd": "index.js",
+    "yr": "index.js",
+    "ys": "index.js",
+    "yt": "index.js",
+    "yy": "index.js",
+    "yys": "index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
