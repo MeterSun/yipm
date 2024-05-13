@@ -6,13 +6,13 @@
   "bin": {
     "ya": "index.js",
     "yad": "index.js",
-    "yag": "index.js",
     "yb": "index.js",
     "yd": "index.js",
     "yr": "index.js",
     "ys": "index.js",
     "yt": "index.js",
     "yy": "index.js",
+    "yyd": "index.js",
     "yys": "index.js"
   },
   "scripts": {

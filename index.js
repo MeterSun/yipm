@@ -10,16 +10,17 @@ const pkgName = require("./package.json").name;
  */
 // prettier-ignore
 const commandMap = {
-  //     npm                yarn            pnpm
-  yy:  ["npm install"   ,  "yarn"       ,  "pnpm install"],
-  yys: ["npm install && npm start"      ,  "yarn && yarn start"   ,  "pnpm install && pnpm start"    ],
-  ya:  ["npm install"   ,  "yarn add"   ,  "pnpm add"    ],
-  yad: ["npm install -D",  "yarn add -D",  "pnpm add -D" ],
-  yb:  ["npm run build" ,  "yarn build" ,  "pnpm build"  ],
-  yd:  ["npm run dev"   ,  "yarn dev"   ,  "pnpm dev"    ],
-  yr:  ["npm uninstall" ,  "yarn remove",  "pnpm remove" ],
-  ys:  ["npm run start" ,  "yarn start" ,  "pnpm start"  ],
-  yt:  ["npm run test"  ,  "yarn test"  ,  "pnpm test"   ],
+  //     npm                    yarn                   pnpm
+  yy:  ["npm install"         ,  "yarn"              ,  "pnpm install"        ],
+  yys: ["npm i && npm start"  ,  "yarn && yarn start",  "pnpm i && pnpm start"],
+  yyd: ["npm i && npm run dev",  "yarn && yarn dev"  ,  "pnpm i && pnpm dev"  ],
+  ya:  ["npm install"         ,  "yarn add"          ,  "pnpm add"            ],
+  yad: ["npm install -D"      ,  "yarn add -D"       ,  "pnpm add -D"         ],
+  yb:  ["npm run build"       ,  "yarn build"        ,  "pnpm build"          ],
+  yd:  ["npm run dev"         ,  "yarn dev"          ,  "pnpm dev"            ],
+  yr:  ["npm uninstall"       ,  "yarn remove"       ,  "pnpm remove"         ],
+  ys:  ["npm run start"       ,  "yarn start"        ,  "pnpm start"          ],
+  yt:  ["npm run test"        ,  "yarn test"         ,  "pnpm test"           ],
 };
 
 /**
@@ -33,7 +34,7 @@ function getCommandName() {
     }
   }
 
-  throw Error(`${pkgName}: unknown command`);
+  throw Error("unknown command");
 }
 
 /**
@@ -51,19 +52,19 @@ function findPm() {
     };
 
     if (fs.existsSync(filePath)) {
-      console.log(`[${pkgName}:Found] package.json`);
+      log("Found", "package.json");
 
       for (const key in lockPathMap) {
         const p = lockPathMap[key];
         if (fs.existsSync(p)) {
-          console.log(`[${pkgName}:Found]`, path.basename(p));
+          log("Found", path.basename(p));
           return key;
         }
       }
     }
   }
 
-  throw new Error(`${pkgName}: cannot find a package manager`);
+  throw new Error(`cannot find a package manager`);
 }
 
 function getCommand(pm = findPm(), cm = getCommandName()) {
@@ -75,7 +76,7 @@ function getCommand(pm = findPm(), cm = getCommandName()) {
  * @param {string} cm
  */
 function runCmd(cm) {
-  console.log(`[${pkgName}: Exec]`, cm);
+  log("Exec", cm);
 
   cm.split("&&").forEach((i) => {
     spawn(
@@ -88,7 +89,23 @@ function runCmd(cm) {
   });
 }
 
-const m = getCommand();
-const otherArgs = process.argv.slice(2);
+/**
+ *
+ * @param {string} action
+ * @param {string} msg
+ */
+function log(action, msg) {
+  const green = (s) => `\u001B[32m${s}\u001B[39m`;
+  console.log(green(` 🚀 ~ [${pkgName}:${action}] ${msg}`));
+}
 
-runCmd(`${m} ${otherArgs.join(" ")}`);
+try {
+  const m = getCommand();
+  const otherArgs = process.argv.slice(2);
+  runCmd(`${m} ${otherArgs.join(" ")}`);
+  console.log("\n");
+} catch (error) {
+  const red = (s) => `\u001B[31m${s}\u001B[39m`;
+
+  console.log(red(`🔴🟠🟢[${pkgName}:Error] ${error?.message || error}`));
+}
