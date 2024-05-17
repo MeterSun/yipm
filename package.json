@@ -4,10 +4,12 @@
   "description": "",
   "main": "index.js",
   "bin": {
+    "yipm": "yipm.js",
     "ya": "index.js",
     "yad": "index.js",
     "yb": "index.js",
     "yd": "index.js",
+    "yi": "index.js",
     "yr": "index.js",
     "ys": "index.js",
     "yt": "index.js",
