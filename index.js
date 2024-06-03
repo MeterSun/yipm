@@ -5,9 +5,10 @@ const path = require("path");
 const { spawn } = require("child_process");
 const pkgName = require("./package.json").name;
 const { commandMap } = require("./config");
+
 /**
  *
- * @returns {'ya'|'yad'|'yag'|'yb'|'yd'|'ys'|'yt'}
+ * @returns {keyof typeof commandMap}
  */
 function getCommandName() {
   for (const key in commandMap) {
@@ -58,18 +59,29 @@ function getCommand(pm = findPm(), cm = getCommandName()) {
  *
  * @param {string} cm
  */
-function runCmd(cm) {
-  log("Exec", cm);
+async function runCmd(cm) {
+  log("Alias", cm);
 
-  cm.split("&&").forEach((i) => {
-    spawn(
+  function exec(cmd, args) {
+    return new Promise((resolve, reject) => {
+      const c = spawn(cmd, args, { stdio: "inherit" });
+      c.on("exit", (code) => {
+        if (code) {
+          reject(code);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
+  for await (const i of cm.split("&&")) {
+    log("Exec", i.trim());
+    await exec(
       i.split(" ").filter(Boolean)[0],
-      i.split(" ").filter(Boolean).slice(1),
-      {
-        stdio: "inherit",
-      }
+      i.split(" ").filter(Boolean).slice(1)
     );
-  });
+  }
 }
 
 /**
@@ -82,13 +94,19 @@ function log(action, msg) {
   console.log(green(` 🚀 ~ [${pkgName}:${action}] ${msg}`));
 }
 
-try {
-  const m = getCommand();
+async function __main__() {
+  let cmd = "";
   const otherArgs = process.argv.slice(2);
-  runCmd(`${m} ${otherArgs.join(" ")}`);
-  console.log("\n");
-} catch (error) {
-  const red = (s) => `\u001B[31m${s}\u001B[39m`;
+  try {
+    cmd = getCommand() + "  " + otherArgs.join(" ");
+    await runCmd(cmd);
+    console.log("\n");
+  } catch (error) {
+    const red = (s) => `\u001B[31m${s}\u001B[39m`;
 
-  console.log(red(`🔴🟠🟢[${pkgName}:Error] ${error?.message || error}`));
+    console.log(
+      red(`🔴🟠🟢[${pkgName}:Error] ${error?.message || error} ${cmd}`)
+    );
+  }
 }
+__main__();

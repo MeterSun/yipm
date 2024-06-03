@@ -3,7 +3,7 @@
  */
 // prettier-ignore
 const commandMap = {
-    //     npm                    yarn                   pnpm
+    //     npm                        yarn                   pnpm
     yy:  ["npm install"           ,  "yarn"              ,  "pnpm install"        ],
     yys: ["npm i && npm start"    ,  "yarn && yarn start",  "pnpm i && pnpm start"],
     yyd: ["npm i && npm run dev"  ,  "yarn && yarn dev"  ,  "pnpm i && pnpm dev"  ],
