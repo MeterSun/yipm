@@ -22,37 +22,54 @@ function getCommandName() {
 
 /**
  *
- * @returns {'npm'|'yarn'|'pnpm'}
+ * @returns {'npm'|'yarn'|'pnpm'|'bun'} 'npm'|'yarn'|'pnpm'|'bun' and packageManager 'xxx@\d+.\d+.\d+'
  */
 function findPm() {
-  for (let i = 0; i < 10; i++) {
+  foundPkg: for (let i = 0; i < 10; i++) {
     const filePath = path.join(...Array(i).fill(".."), "package.json");
 
     const lockPathMap = {
       npm: path.join(...Array(i).fill(".."), "package-lock.json"),
       yarn: path.join(...Array(i).fill(".."), "yarn.lock"),
       pnpm: path.join(...Array(i).fill(".."), "pnpm-lock.yaml"),
+      bun: path.join(...Array(i).fill(".."), "bun.lockb"),
     };
 
     if (fs.existsSync(filePath)) {
       log("Found", "package.json");
+
+      const pm = JSON.parse(fs.readFileSync(filePath, "utf8")).packageManager;
+      // pm regex = (bun|npm|pnpm|yarn)@\d+\.\d+\.\d+(-.+)?
+      if (pm) {
+        log("Found", "packageManager", pm);
+        return pm;
+      }
 
       for (const key in lockPathMap) {
         const p = lockPathMap[key];
         if (fs.existsSync(p)) {
           log("Found", path.basename(p));
           return key;
+        } else {
+          continue foundPkg;
         }
       }
-      return "npm";
     }
   }
 
-  throw new Error(`cannot find a package manager`);
+  return "npm";
 }
 
 function getCommand(pm = findPm(), cm = getCommandName()) {
-  return commandMap[cm][["npm", "yarn", "pnpm"].indexOf(pm)];
+  if (pm.includes("@")) {
+    const p = pm.slice(0, pm.indexOf("@"));
+    return commandMap[cm][["npm", "yarn", "pnpm", "bun"].indexOf(p)].replaceAll(
+      p,
+      `npx ${pm}`
+    );
+  } else {
+    return commandMap[cm][["npm", "yarn", "pnpm", "bun"].indexOf(pm)];
+  }
 }
 
 /**
@@ -89,9 +106,9 @@ async function runCmd(cm) {
  * @param {string} action
  * @param {string} msg
  */
-function log(action, msg) {
+function log(action, ...msg) {
   const green = (s) => `\u001B[32m${s}\u001B[39m`;
-  console.log(green(` 🚀 ~ [${pkgName}:${action}] ${msg}`));
+  console.log(green(` 🚀 ~ [${pkgName}:${action}] ${msg.join(" ")}`));
 }
 
 async function __main__() {
