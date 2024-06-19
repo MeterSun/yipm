@@ -25,7 +25,7 @@ function getCommandName() {
  * @returns {'npm'|'yarn'|'pnpm'|'bun'} 'npm'|'yarn'|'pnpm'|'bun' and packageManager 'xxx@\d+.\d+.\d+'
  */
 function findPm() {
-  foundPkg: for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 10; i++) {
     const filePath = path.join(...Array(i).fill(".."), "package.json");
 
     const lockPathMap = {
@@ -36,7 +36,7 @@ function findPm() {
     };
 
     if (fs.existsSync(filePath)) {
-      log("Found", "package.json");
+      log("Found", filePath);
 
       const pm = JSON.parse(fs.readFileSync(filePath, "utf8")).packageManager;
       // pm regex = (bun|npm|pnpm|yarn)@\d+\.\d+\.\d+(-.+)?
@@ -48,10 +48,8 @@ function findPm() {
       for (const key in lockPathMap) {
         const p = lockPathMap[key];
         if (fs.existsSync(p)) {
-          log("Found", path.basename(p));
+          log("Found", p);
           return key;
-        } else {
-          continue foundPkg;
         }
       }
     }
