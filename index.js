@@ -97,7 +97,7 @@ function getCommand(pm, cm = getCommandName()) {
     const p = pm.slice(0, pm.indexOf("@"));
     return commandMap[cm][["npm", "yarn", "pnpm", "bun"].indexOf(p)].replaceAll(
       p,
-      `npx ${pm}`
+      `npx -y ${pm}`
     );
   } else {
     return commandMap[cm][["npm", "yarn", "pnpm", "bun"].indexOf(pm)];
