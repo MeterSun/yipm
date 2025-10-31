@@ -40,7 +40,7 @@ async function findPm() {
       npm: path.join(...Array(i).fill(".."), "package-lock.json"),
       yarn: path.join(...Array(i).fill(".."), "yarn.lock"),
       pnpm: path.join(...Array(i).fill(".."), "pnpm-lock.yaml"),
-      bun: path.join(...Array(i).fill(".."), "bun.lockb"),
+      bun: path.join(...Array(i).fill(".."), "bun.lock"),
     };
 
     if (fs.existsSync(filePath)) {
